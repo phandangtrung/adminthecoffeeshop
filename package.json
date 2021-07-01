@@ -34,6 +34,7 @@
     "axios": "^0.21.0",
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
+    "create-app-react": "^1.0.6",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "js-cookie": "^2.2.1",
@@ -82,7 +83,7 @@
     ]
   },
   "engines": {
-    "node": ">=10",
-    "npm": ">=6"
+    "node": "12.18.1",
+    "npm": "6.14.5"
   }
 }
