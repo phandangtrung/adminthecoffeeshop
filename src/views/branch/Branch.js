@@ -391,8 +391,12 @@ function Branch() {
           catName: cateName,
         };
       });
-      settabledata(newBraL[0].listProduct);
-      setfakeProductList(newBraL[0].listProduct);
+      settabledata(
+        newBraL[0].listProduct.filter((prd) => prd.name !== undefined)
+      );
+      setfakeProductList(
+        newBraL[0].listProduct.filter((prd) => prd.name !== undefined)
+      );
       setIsLoading(false);
     } catch (error) {
       console.log("failed to fetch product list: ", error);
