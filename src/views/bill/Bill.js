@@ -67,13 +67,14 @@ function Bill() {
       const neworList = response.orders.filter(
         (od) => od.branchId === branchIDE
       );
-      if (isAdmin) {
+      if (isAdmin === "true") {
         settabledata(response.orders);
+        setfakedata(response.orders);
       } else {
         settabledata(neworList);
+        setfakedata(neworList);
       }
 
-      setfakedata(response.orders);
       setIsLoading(false);
     } catch (error) {
       console.log("failed to fetch order list: ", error);
