@@ -37,11 +37,13 @@ import categoryApi from "../../api/categoryApi";
 import moment from "moment";
 import Moment from "react-moment";
 function Category() {
+  const { Search } = Input;
   const [form] = Form.useForm();
   const [isvisible, SetVisible] = useState(false);
   const [loadingmodal, setloadingmodal] = useState(false);
   const [detail, setdetail] = useState(null);
   const [stateidCategory, setidCategory] = useState(null);
+  const [fakecateList, setfakecateList] = useState([]);
   const deleteCategory = (record) => {
     const fetchDeleteProduct = async () => {
       try {
@@ -67,6 +69,17 @@ function Category() {
     form.setFieldsValue(record);
     SetVisible(!isvisible);
     setidCategory(record._id);
+  };
+  const onSearch = (values) => {
+    if (values === "") {
+      settabledata(fakecateList);
+    } else {
+      const filteredProduct = fakecateList.filter((cate) => {
+        return cate.name.toLowerCase().indexOf(values.toLowerCase()) !== -1;
+      });
+      console.log(">>>filteredProduct", filteredProduct);
+      if (filteredProduct.length > 0) settabledata(filteredProduct);
+    }
   };
   const columns = [
     {
@@ -223,6 +236,7 @@ function Category() {
         // dispatch({ type: "FETCH_SUCCESS", payload: response.products });
         dispatchCategory(doGetList_success(response.categories));
         settabledata(response.categories);
+        setfakecateList(response.categories);
         // console.log(">>>> productlist: ", productList);
         setIsLoading(false);
       } catch (error) {
@@ -236,20 +250,36 @@ function Category() {
     <>
       <CCard>
         <CCardHeader className="CCardHeader-title ">Category</CCardHeader>
-        <CButton
-          style={{
-            width: "200px",
-            height: "50px",
-            marginTop: "20px",
-            marginLeft: "20px",
-          }}
-          shape="pill"
-          color="info"
-          onClick={toggle}
-        >
-          {/* <i style={{ fontSize: "20px" }} class="cil-playlist-add"></i>  */}
-          Add Category
-        </CButton>
+        <Row>
+          <Col lg={15}>
+            <CButton
+              style={{
+                width: "200px",
+                height: "50px",
+                marginTop: "20px",
+                marginLeft: "20px",
+              }}
+              shape="pill"
+              color="info"
+              onClick={toggle}
+            >
+              {/* <i style={{ fontSize: "20px" }} class="cil-playlist-add"></i>  */}
+              Add Category
+            </CButton>
+          </Col>
+          <Col lg={8}>
+            <Search
+              style={{
+                width: "100%",
+                height: "50px",
+                margin: "30px",
+              }}
+              placeholder="Search category"
+              onSearch={onSearch}
+            />
+          </Col>
+        </Row>
+
         <CCardBody>
           {isLoading ? (
             <div style={{ textAlign: "center" }}>

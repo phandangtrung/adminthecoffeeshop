@@ -27,9 +27,11 @@ import commentApi from "../../api/commentApi";
 import productApi from "../../api/productApi";
 
 function Comment() {
+  const { Search } = Input;
   const [isLoading, setIsLoading] = useState(false);
   const [tabledata, settabledata] = useState([]);
   const [proList, setproList] = useState([]);
+  const [fakecmtList, setfakecmtList] = useState([]);
   const deleteComment = (record) => {
     console.log("record: ", record);
 
@@ -52,7 +54,17 @@ function Comment() {
     if (finalname === undefined) return <div>Deleted</div>;
     else return <div>{finalname}</div>;
   };
-
+  const onSearch = (values) => {
+    if (values === "") {
+      settabledata(fakecmtList);
+    } else {
+      const filteredProduct = fakecmtList.filter((cmt) => {
+        return cmt.content.toLowerCase().indexOf(values.toLowerCase()) !== -1;
+      });
+      console.log(">>>filteredProduct", filteredProduct);
+      if (filteredProduct.length > 0) settabledata(filteredProduct);
+    }
+  };
   const columns = [
     {
       title: "Email",
@@ -115,6 +127,7 @@ function Comment() {
         console.log("Fetch comment succesfully: ", response);
         fetchProduct();
         settabledata(response.comments);
+        setfakecmtList(response.comments);
         setIsLoading(false);
       } catch (error) {
         console.log("failed to fetch comment list: ", error);
@@ -126,6 +139,20 @@ function Comment() {
     <>
       <CCard>
         <CCardHeader className="CCardHeader-title ">Comment</CCardHeader>
+        <Row>
+          <Col lg={15}></Col>
+          <Col lg={8}>
+            <Search
+              style={{
+                width: "100%",
+                height: "50px",
+                margin: "30px",
+              }}
+              placeholder="Search commnet"
+              onSearch={onSearch}
+            />
+          </Col>
+        </Row>
         {isLoading ? (
           <div style={{ textAlign: "center" }}>
             <Spin size="large" />

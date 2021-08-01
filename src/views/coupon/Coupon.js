@@ -32,11 +32,13 @@ import commentApi from "../../api/commentApi";
 import couponApi from "../../api/couponApi";
 
 function Coupon() {
+  const { Search } = Input;
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [tabledata, settabledata] = useState([]);
   const [loadingmodal, setloadingmodal] = useState(false);
   const [datecre, setdatecre] = useState({ startTime: "", endTime: "" });
+  const [fakecoupList, setfakecoupList] = useState([]);
   const deleteComment = (record) => {
     console.log("record: ", record);
     const fetchDeleteCoupon = async () => {
@@ -52,7 +54,20 @@ function Coupon() {
     };
     fetchDeleteCoupon();
   };
-
+  const onSearch = (values) => {
+    if (values === "") {
+      settabledata(fakecoupList);
+    } else {
+      const filteredProduct = fakecoupList.filter((coup) => {
+        return (
+          coup.couponCode.toLowerCase().indexOf(values.toLowerCase()) !== -1 ||
+          coup.content.toLowerCase().indexOf(values.toLowerCase()) !== -1
+        );
+      });
+      console.log(">>>filteredProduct", filteredProduct);
+      if (filteredProduct.length > 0) settabledata(filteredProduct);
+    }
+  };
   const columns = [
     {
       title: "Coupon Code",
@@ -176,6 +191,7 @@ function Coupon() {
         const response = await couponApi.getAll();
         console.log("Fetch Coupon succesfully: ", response);
         settabledata(response.couponcode);
+        setfakecoupList(response.couponcode);
         setIsLoading(false);
       } catch (error) {
         console.log("failed to fetch product list: ", error);
@@ -191,19 +207,35 @@ function Coupon() {
     <>
       <CCard>
         <CCardHeader className="CCardHeader-title ">Coupon Code</CCardHeader>
-        <CButton
-          style={{
-            width: "200px",
-            height: "50px",
-            marginTop: "20px",
-            marginLeft: "20px",
-          }}
-          shape="pill"
-          color="info"
-          onClick={toggle}
-        >
-          Add Coupon
-        </CButton>
+        <Row>
+          <Col lg={15}>
+            <CButton
+              style={{
+                width: "200px",
+                height: "50px",
+                marginTop: "20px",
+                marginLeft: "20px",
+              }}
+              shape="pill"
+              color="info"
+              onClick={toggle}
+            >
+              Add Coupon
+            </CButton>
+          </Col>
+          <Col lg={8}>
+            <Search
+              style={{
+                width: "100%",
+                height: "50px",
+                margin: "30px",
+              }}
+              placeholder="Search coupon"
+              onSearch={onSearch}
+            />
+          </Col>
+        </Row>
+
         <CCardBody>
           {isLoading ? (
             <div style={{ textAlign: "center" }}>
