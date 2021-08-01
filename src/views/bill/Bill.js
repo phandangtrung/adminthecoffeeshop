@@ -20,11 +20,13 @@ import {
   Button,
   Tag,
   DatePicker,
+  Switch,
 } from "antd";
 import {
   CheckCircleOutlined,
   DeleteOutlined,
   UploadOutlined,
+  ScheduleOutlined,
 } from "@ant-design/icons";
 import "./style.css";
 import CIcon from "@coreui/icons-react";
@@ -99,6 +101,12 @@ function Bill() {
       .reduce((prev, next, index) => {
         return (index % 3 ? next : next + ".") + prev;
       });
+  };
+  const onneworder = (checked) => {
+    if (checked) {
+      const neworL = fakedata.filter((fd) => !fd.status);
+      settabledata(neworL);
+    } else settabledata(fakedata);
   };
   const onConfirmorder = (record) => {
     var CurrentDate = moment().toISOString();
@@ -336,6 +344,30 @@ function Bill() {
         <CCardBody>
           <span style={{ float: "right", paddingBottom: "20px" }}>
             Filter by date <DatePicker onChange={onChange} />
+          </span>
+          <span
+            style={{
+              marginRight: "20px",
+              width: "150px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+            }}
+          >
+            <div style={{ paddingLeft: "10px" }}>New Orders</div>
+            <Switch defaultChecked={false} onChange={onneworder} />
+            {/* <Button onClick={() => onneworder()}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <ScheduleOutlined />
+
+              </div>
+            </Button> */}
           </span>
           {isLoading ? (
             <div style={{ textAlign: "center" }}>
