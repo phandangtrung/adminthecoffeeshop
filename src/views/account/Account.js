@@ -12,13 +12,33 @@ import {
   Button,
   Popconfirm,
   Tag,
+  Input,
+  Row,
+  Col,
 } from "antd";
 
 import userApi from "../../api/userApi";
 
 function Account() {
+  const { Search } = Input;
   const [isLoading, setIsLoading] = useState(false);
   const [tabledata, settabledata] = useState([]);
+  const [fakeuserList, setfakeuserList] = useState([]);
+
+  const onSearch = (values) => {
+    if (values === "") {
+      settabledata(fakeuserList);
+    } else {
+      const filteredProduct = fakeuserList.filter((user) => {
+        return (
+          user.email.toLowerCase().indexOf(values.toLowerCase()) !== -1 ||
+          user.fName.toLowerCase().indexOf(values.toLowerCase()) !== -1
+        );
+      });
+      console.log(">>>filteredProduct", filteredProduct);
+      if (filteredProduct.length > 0) settabledata(filteredProduct);
+    }
+  };
   const lockUser = (record) => {
     console.log("record: ", record);
     const fetchLockUser = async () => {
@@ -198,6 +218,7 @@ function Account() {
         const response = await userApi.getallUser(tokenUser);
         console.log("Fetch products succesfully: ", response);
         settabledata(response.users);
+        setfakeuserList(response.users);
         setIsLoading(false);
       } catch (error) {
         console.log("failed to fetch product list: ", error);
@@ -209,6 +230,21 @@ function Account() {
     <>
       <CCard>
         <CCardHeader className="CCardHeader-title ">Account</CCardHeader>
+        <Row>
+          <Col lg={15}></Col>
+          <Col lg={8}>
+            <Search
+              style={{
+                width: "100%",
+                height: "50px",
+                margin: "30px",
+              }}
+              placeholder="Search user"
+              onSearch={onSearch}
+            />
+          </Col>
+        </Row>
+
         {isLoading ? (
           <div style={{ textAlign: "center" }}>
             <Spin size="large" />
