@@ -54,6 +54,15 @@ function Coupon() {
     };
     fetchDeleteCoupon();
   };
+  const formatCurrency = (monney) => {
+    const mn = String(monney);
+    return mn
+      .split("")
+      .reverse()
+      .reduce((prev, next, index) => {
+        return (index % 3 ? next : next + ".") + prev;
+      });
+  };
   const onSearch = (values) => {
     if (values === "") {
       settabledata(fakecoupList);
@@ -85,6 +94,12 @@ function Coupon() {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+    },
+    {
+      title: "Condition",
+      dataIndex: "condition",
+      key: "condition",
+      render: (condition) => <div>{formatCurrency(condition)} VND</div>,
     },
     {
       title: "Start Date",
@@ -269,12 +284,18 @@ function Coupon() {
               </Col>
             </Row>
             <Row style={{ marginBottom: "20px" }}>
-              <Col span={24}>
+              <Col span={11}>
                 <DatePicker.RangePicker
                   format="DD-MM-YYYY"
                   onChange={onselectDate}
                   // onOk={onselectDate}
                 />
+              </Col>
+              <Col span={1}></Col>
+              <Col span={12}>
+                <Form.Item name="condition">
+                  <Input addonAfter="VND" placeholder="Condition" />
+                </Form.Item>
               </Col>
             </Row>
             <Row>
