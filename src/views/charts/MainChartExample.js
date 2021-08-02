@@ -3,7 +3,7 @@ import { CChartLine, CChartBar } from "@coreui/react-chartjs";
 import { getStyle, hexToRgba } from "@coreui/utils/src";
 import branchApi from "../../api/branchApi";
 import orderApi from "../../api/orderApi";
-import { DatePicker, Space, Row, Col } from "antd";
+import { DatePicker, Space, Row, Col, Select } from "antd";
 import {
   BarChart,
   Bar,
@@ -24,7 +24,7 @@ const MainChartExample = (attributes) => {
   const [rlist, setrlist] = useState([]);
   const [orderLi, setorderLi] = useState([]);
   const [prochartLi, setprochartLi] = useState([{ name: "", sold: 0 }]);
-
+  const { Option } = Select;
   useEffect(() => {
     const fetchOrderList = async () => {
       try {
@@ -61,6 +61,11 @@ const MainChartExample = (attributes) => {
             revenue: nr.revenue,
           });
         });
+        let sumrev = 0;
+        newbr.map((nr) => {
+          sumrev += nr.revenue;
+        });
+        dfdatset.push({ name: "Total Revenue", totalsumrev: sumrev });
         setrlist([...dfdatset]);
         setbranchList(newbr);
       } catch (error) {
@@ -109,6 +114,36 @@ const MainChartExample = (attributes) => {
     // console.log(dateString);
     filterord("year", dateString);
   }
+  const handleChange = (value) => {
+    let orderda;
+    if (value === "allbr") {
+      orderda = orderLi;
+    } else {
+      orderda = orderLi.filter((ol) => ol.branchId === value);
+    }
+    let pronamerr = [];
+    orderda.map((od) => {
+      od.productList.map((prod) => {
+        if (pronamerr.indexOf(prod.pro.name) === -1) {
+          pronamerr.push(prod.pro.name);
+        }
+      });
+    });
+    console.log(">>pronamerr", pronamerr);
+    let listprosold = [];
+    pronamerr.map((pn) => {
+      let sumsold = 0;
+      orderda.map((od) => {
+        od.productList.map((prod) => {
+          if (pn === prod.pro.name) sumsold += prod.quantity;
+        });
+      });
+      let objpn = { name: pn, sold: sumsold };
+      listprosold.push(objpn);
+    });
+    console.log(">>listprosold", listprosold);
+    setprochartLi(listprosold);
+  };
   const getrevenue = (newodta) => {
     let newbr = branchList;
     newbr.map((nb) => {
@@ -252,7 +287,57 @@ const MainChartExample = (attributes) => {
         <Tooltip />
         <Legend />
         <Bar dataKey="revenue" stackId="a" fill="#8884d8" />
+        <Bar dataKey="totalsumrev" stackId="a" fill="#eb3446" />
       </BarChart>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyItems: "flex-end",
+          marginTop: "20px",
+        }}
+      >
+        <Row
+          style={{
+            width: "100%",
+            marginBottom: 20,
+            backgroundColor: "white",
+            borderRadius: 20,
+            height: 60,
+          }}
+        >
+          <Col
+            style={{ paddingLeft: 20, display: "flex", alignItems: "center" }}
+            span={12}
+          >
+            <div style={{ fontSize: 20, fontWeight: "bold" }}>
+              PRODUCT STATISTICS SOLD{" "}
+            </div>
+          </Col>
+          <Col style={{ display: "flex", alignItems: "center" }} span={2}></Col>
+          <Col style={{ display: "flex", alignItems: "center" }} span={2}></Col>
+          <Col
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+            }}
+            span={8}
+          >
+            Select branch{" "}
+            <Select
+              defaultValue="allbr"
+              style={{ width: 200 }}
+              onChange={handleChange}
+            >
+              {branchList.map((bl) => (
+                <Option value={bl._id}>{bl.name}</Option>
+              ))}
+              <Option value="allbr">All Branch</Option>
+            </Select>
+          </Col>
+        </Row>
+      </div>
       <ComposedChart
         layout="vertical"
         width={1100}
